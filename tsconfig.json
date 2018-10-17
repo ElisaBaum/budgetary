@@ -14,7 +14,7 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "app3"
+    "app"
   ],
   "exclude": [
     "node_modules"

@@ -1,16 +1,35 @@
-import {ApolloServer} from "apollo-server-express";
+import "reflect-metadata";
+
 import * as express from 'express';
-import {schema} from "./schema";
+import {buildSchema} from "type-graphql";
+import {ApolloServer} from "apollo-server-express";
 
-const server = new ApolloServer({
-  schema,
-  uploads: true
-});
+import {TurnoverResolver} from "./turnover/TurnoverResolver";
 
-const app = express();
+async function bootstrap() {
+  const schema = await buildSchema({
+    resolvers: [
+      TurnoverResolver
+    ],
+    validate: false
+  });
 
-server.applyMiddleware({ app });
+  const app = express();
 
-app.listen({ port: 4000 }, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-);
+  const server = new ApolloServer({
+    schema,
+    uploads: true,
+    formatError: (error: any) => {
+      console.warn(error);
+      return error;
+    },
+
+  });
+  server.applyMiddleware({ app });
+
+  app.listen(4000);
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+
+}
+
+bootstrap();
